@@ -33,8 +33,8 @@ const reviews = require('./routers/reviews')
 const users = require('./routers/users')
 
 // mongodb
-const dbUrl = 'mongodb://localhost:27017/Yelpcamp'
-//const dbUrl = process.env.DB_URL;
+// const dbUrl = 'mongodb://localhost:27017/Yelpcamp'
+const dbUrl = process.env.DB_URL;
 async function main() {
     await mongoose.connect(dbUrl, {
         useNewUrlParser: true,
@@ -48,12 +48,14 @@ async function main() {
 app.set('views', path.join(__dirname, 'views'))
 app.use(express.static(path.join(__dirname, 'public')))
 
+
+const secret = process.env.SECRET || 'thisshouldbeabettersecret!';
 // To 'fake' put/patch/delete requests:
 app.use(methodOverride('_method'))
 
 const store = new MongoDBStore({
     url: dbUrl,
-    secret: 'thisshouldbeabettersecret!',
+    secret,
     touchAfter: 24 * 60 * 60
 })
 
@@ -61,7 +63,7 @@ const store = new MongoDBStore({
 // session
 const sessionConfig = {
     store,
-    secret: 'thisshouldbeabettersecret!',
+    secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
